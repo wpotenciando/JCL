@@ -895,7 +895,7 @@ function arm(){EDS.forEach(function(x){var el=x[0],o=x[1],k=x[2],n=x[3];
     if(n==='n')repaint(o);var tg=el.dataset.tw;if(tg)document.querySelectorAll('[data-tw="'+tg+'"]').forEach(function(e){if(e!==el)e.textContent=n==='n'?peso(o[k]):o[k]});
     save()}})}
 /* Removes a plain, even background that touches the photo's edges so the site colour shows through. Returns true if it did. */
-function knockout(c,cx){var w=c.width,h=c.height,im=cx.getImageData(0,0,w,h),d=im.data,N=w*h,T=26,F=34;
+function knockout(c,cx){var w=c.width,h=c.height,im=cx.getImageData(0,0,w,h),d=im.data,N=w*h,T=20,F=30;
   var bx=[],by=[],i,k;for(i=0;i<w;i+=Math.max(1,w>>6)){bx.push(i,i);by.push(0,h-1)}for(i=0;i<h;i+=Math.max(1,h>>6)){bx.push(0,w-1);by.push(i,i)}
   var R=[],G=[],B=[];for(k=0;k<bx.length;k++){var o=(by[k]*w+bx[k])*4;R.push(d[o]);G.push(d[o+1]);B.push(d[o+2])}
   function med(a){a=a.slice().sort(function(x,y){return x-y});return a[a.length>>1]}
@@ -910,6 +910,9 @@ function knockout(c,cx){var w=c.width,h=c.height,im=cx.getImageData(0,0,w,h),d=i
   while(sp){var q=st[--sp],x=q%w,y=(q-x)/w;fill[q]=1;cnt++;
     if(x>0)push(x-1,y);if(x<w-1)push(x+1,y);if(y>0)push(x,y-1);if(y<h-1)push(x,y+1)}
   if(cnt<N*.04)return false;                  /* nothing meaningful found */
+  if(cnt>N*.93)return false;                   /* would erase almost the whole photo: leave it alone */
+  var cc=0,ct=0;for(var y1=h>>2;y1<h-(h>>2);y1+=2)for(var x1=w>>2;x1<w-(w>>2);x1+=2){ct++;if(fill[y1*w+x1])cc++}
+  if(ct&&cc/ct>.35)return false;              /* the middle of the photo (the product) would be cut away */
   for(var y2=0;y2<h;y2++)for(var x2=0;x2<w;x2++){var q2=y2*w+x2;
     if(fill[q2]){d[q2*4+3]=0;continue}
     var nb=(x2>0&&fill[q2-1])||(x2<w-1&&fill[q2+1])||(y2>0&&fill[q2-w])||(y2<h-1&&fill[q2+w]);
